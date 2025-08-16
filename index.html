@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>⚖️ Legal Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat-container {
+      width: 500px;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0px 0px 10px #ccc;
+      display: flex;
+      flex-direction: column;
+    }
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .user {
+      background: #007bff;
+      color: white;
+      align-self: flex-end;
+    }
+    .bot {
+      background: #e5e5ea;
+      color: black;
+      align-self: flex-start;
+    }
+    input {
+      width: 80%;
+      padding: 10px;
+    }
+    button {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="messages" id="messages"></div>
+    <div>
+      <input id="question" type="text" placeholder="Ask a legal question...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const q = document.getElementById("question").value;
+      if (!q) return;
+
+      // Display user message
+      const msgBox = document.getElementById("messages");
+      msgBox.innerHTML += `<div class="message user">${q}</div>`;
+
+      // Clear input
+      document.getElementById("question").value = "";
+
+      // Fetch from backend
+      const res = await fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({q})
+      });
+      const data = await res.json();
+
+      // Display bot response
+      msgBox.innerHTML += `<div class="message bot">${data.answer}<br><small>${data.disclaimer}</small></div>`;
+      msgBox.scrollTop = msgBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
